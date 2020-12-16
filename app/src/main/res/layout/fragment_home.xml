@@ -7,11 +7,19 @@
 
     <include layout="@layout/toolbar" />
 
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        layout="@layout/layout_location_place"
+        android:layout_below="@+id/toolbar" />
+
+
+
     <LinearLayout
 
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@+id/toolbar"
+        android:layout_below="@+id/mainLayout"
         android:orientation="vertical">
 
         <LinearLayout

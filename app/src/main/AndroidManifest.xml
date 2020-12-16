@@ -18,7 +18,7 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true">
-        <activity android:name=".UI.Activities.SubCategoryProductActivity"></activity>
+        <activity android:name=".UI.Activities.SubCategoryProductActivity" />
         <activity android:name=".UI.Activities.OrdersFailed" />
         <activity android:name=".UI.Activities.OrderPlaced" />
         <activity android:name=".UI.Activities.OurMottoActivity" />

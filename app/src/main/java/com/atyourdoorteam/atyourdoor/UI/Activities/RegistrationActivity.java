@@ -31,6 +31,7 @@ public class RegistrationActivity extends AppCompatActivity {
     private SharedPreferences sharedPreferences;
     private RetrofitInstance retrofitInstance;
     private SharedPreferences shopIdPreferences;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,8 +107,6 @@ public class RegistrationActivity extends AppCompatActivity {
                         }
                     });
                 }
-
-
 
 
             }
