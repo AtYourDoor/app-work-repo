@@ -9,7 +9,26 @@
     <include
         layout="@layout/toolbar" />
 
+    <LinearLayout
+        android:id="@+id/nearByLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/toolbar"
+        android:orientation="vertical"
+        android:padding="7dp">
+
+        <TextView
+            android:id="@+id/inCityShopCount"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/mm"
+            android:textColor="#000000"
+            android:textSize="25dp"
+            tools:text="10 Shops In Your City" />
+    </LinearLayout>
+
     <com.facebook.shimmer.ShimmerFrameLayout
+
         android:layout_below="@+id/toolbar"
         android:id="@+id/shimmerLayoutForSelectShops"
         android:layout_width="match_parent"
@@ -34,7 +53,7 @@
     </com.facebook.shimmer.ShimmerFrameLayout>
 
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_below="@+id/toolbar"
+        android:layout_below="@+id/nearByLayout"
         android:id="@+id/selectShopsRecyclerView"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

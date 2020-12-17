@@ -29,6 +29,8 @@ import com.atyourdoorteam.atyourdoor.models.Products;
 import com.atyourdoorteam.atyourdoor.models.Shop;
 import com.bumptech.glide.Glide;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -47,10 +49,19 @@ public class SelectStoreAdapter extends RecyclerView.Adapter<SelectStoreAdapter.
     private Database cartDb;
     private ArrayList<GroceryList> groceryLists;
     private ArrayList<String> finalList = new ArrayList<>();
+    private double latitude;
+    private double longitude;
 
     public SelectStoreAdapter(List<Shop> shopList, Context context) {
         this.shopList = shopList;
         this.context = context;
+    }
+
+    public SelectStoreAdapter(List<Shop> shopList, Context context, double latitude, double longitude) {
+        this.shopList = shopList;
+        this.context = context;
+        this.latitude = latitude;
+        this.longitude = longitude;
     }
 
     @NonNull
@@ -69,6 +80,9 @@ public class SelectStoreAdapter extends RecyclerView.Adapter<SelectStoreAdapter.
         Glide.with(context).load(shop.getShopImageURL()).into(holder.shopsImage);
         holder.shopsTitle.setText(shop.getShopName());
         holder.shopsAddress.setText(shop.getShopAddress());
+        double shoplatitude = shop.getShopLocation().get(0);
+        double shoplongitude = shop.getShopLocation().get(1);
+        holder.shopDistance.setText(Math.round(distance(latitude, shoplatitude, longitude, shoplongitude) * 100.0) / 100.0 + " Kms Far");
         database = Room.databaseBuilder(context, Database.class, "ListDB").allowMainThreadQueries().build();
         cartDb = Room.databaseBuilder(context, Database.class, "CartDB").allowMainThreadQueries().build();
         groceryLists = (ArrayList<GroceryList>) database.getGroceryDao().getGroceryList();
@@ -225,11 +239,39 @@ public class SelectStoreAdapter extends RecyclerView.Adapter<SelectStoreAdapter.
         return shopList.size();
     }
 
+    public static double distance(double lat1, double lat2, double lon1, double lon2) {
+
+        // The math module contains a function
+        // named toRadians which converts from
+        // degrees to radians.
+        lon1 = Math.toRadians(lon1);
+        lon2 = Math.toRadians(lon2);
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);
+
+        // Haversine formula
+        double dlon = lon2 - lon1;
+        double dlat = lat2 - lat1;
+        double a = Math.pow(Math.sin(dlat / 2), 2)
+                + Math.cos(lat1) * Math.cos(lat2)
+                * Math.pow(Math.sin(dlon / 2), 2);
+
+        double c = 2 * Math.asin(Math.sqrt(a));
+
+        // Radius of earth in kilometers. Use 3956
+        // for miles
+        double r = 6371;
+
+        // calculate the result
+        return (c * r);
+    }
+
     public static class SelectStoreViewHolder extends RecyclerView.ViewHolder {
         public ImageView shopsImage;
         public TextView shopsTitle;
         public TextView shopsAddress;
         public CardView shopCardView;
+        public TextView shopDistance;
 
         public SelectStoreViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -238,6 +280,7 @@ public class SelectStoreAdapter extends RecyclerView.Adapter<SelectStoreAdapter.
             shopsTitle = itemView.findViewById(R.id.shopName);
             shopsAddress = itemView.findViewById(R.id.shopAddress);
             shopCardView = itemView.findViewById(R.id.shopCardView);
+            shopDistance = itemView.findViewById(R.id.shopDistance);
         }
     }
 }
