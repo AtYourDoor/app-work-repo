@@ -87,6 +87,7 @@ public class HomeFragment extends Fragment {
     private int REQUEST_CHECK_CODE = 8989;
     private LocationSettingsRequest.Builder builder;
     private TextView displayAddress;
+    private TextView numberOfShops;
 
     @Nullable
     @Override
@@ -114,6 +115,7 @@ public class HomeFragment extends Fragment {
         shopsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         viewAllCategories = view.findViewById(R.id.viewAllCategories);
         viewAllShops = view.findViewById(R.id.viewAllShops);
+        numberOfShops = view.findViewById(R.id.nearbyShopCount);
 //        searchView = view.findViewById(R.id.searchView);
 
 
@@ -165,12 +167,13 @@ public class HomeFragment extends Fragment {
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
-
+                            String latitude = String.valueOf(location.getLatitude());
+                            String longitude = String.valueOf(location.getLongitude());
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
                                     getCategories();
-                                    getShops();
+                                    getShops(latitude, longitude);
                                 }
                             }, 700);
                         }
@@ -252,12 +255,13 @@ public class HomeFragment extends Fragment {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
+            String latitude = String.valueOf(mLastLocation.getLatitude());
+            String longitude = String.valueOf(mLastLocation.getLongitude());
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
                     getCategories();
-                    getShops();
+                    getShops(latitude, longitude);
                 }
             }, 700);
         }
@@ -277,7 +281,6 @@ public class HomeFragment extends Fragment {
 
         return locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER) || locationManager.isProviderEnabled(LocationManager.NETWORK_PROVIDER);
     }
-
 
     @Override
     public void
@@ -329,10 +332,10 @@ public class HomeFragment extends Fragment {
         });
     }
 
-    private void getShops() {
+    private void getShops(String latitude, String longitude) {
         APIService apiService = RetrofitInstance.getService();
 
-        Call<List<Shop>> shopsList = apiService.getShopsList();
+        Call<List<Shop>> shopsList = apiService.getShopsAccrodingToLocation(longitude, latitude);
 
         shopsList.enqueue(new Callback<List<Shop>>() {
             @Override
@@ -347,10 +350,13 @@ public class HomeFragment extends Fragment {
                                 shopList.get(i).getId(),
                                 shopList.get(i).getShopName(),
                                 shopList.get(i).getShopImageURL(),
-                                shopList.get(i).getShopAddress()));
+                                shopList.get(i).getShopAddress(),
+                                shopList.get(i).getShopLocation()));
                     }
 
-                    shopsAdapter = new ShopsAdapter(shopArrayList, getContext());
+                    numberOfShops.setText(shopList.size() + " Shops Around You");
+
+                    shopsAdapter = new ShopsAdapter(shopArrayList, getContext(), Double.valueOf(latitude), Double.valueOf(longitude));
                     shopsRecyclerView.setAdapter(shopsAdapter);
                     shimmerFrameLayout.stopShimmer();
                     shimmerFrameLayout2.stopShimmer();

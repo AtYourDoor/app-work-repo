@@ -22,30 +22,31 @@ import com.atyourdoorteam.atyourdoor.R;
 import com.atyourdoorteam.atyourdoor.db.Database;
 import com.atyourdoorteam.atyourdoor.db.entities.Cart;
 import com.atyourdoorteam.atyourdoor.models.Products;
+import com.atyourdoorteam.atyourdoor.models.SearchProductsByLocation.SearchProducts;
 import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class SearchViewAdapter extends RecyclerView.Adapter<SearchViewAdapter.SearchViewHolder> implements Filterable {
-    private List<Products> productsList;
-    private List<Products> productsListFull;
+    private List<SearchProducts> searchProducts;
+    private List<SearchProducts> searchProductsListFull;
     private ArrayList<Cart> carts;
     private Database database;
 
     Context context;
 
-    public SearchViewAdapter(List<Products> productsList, Context context) {
-        this.productsList = productsList;
+    public SearchViewAdapter(List<SearchProducts> searchProducts, Context context) {
+        this.searchProducts = searchProducts;
         this.context = context;
-        productsListFull = new ArrayList<>(productsList);
+        searchProductsListFull = new ArrayList<>(searchProducts);
     }
 
     @NonNull
     @Override
     public SearchViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater layoutInflater = LayoutInflater.from(parent.getContext());
-        View listItem = layoutInflater.inflate(R.layout.item_product, parent, false);
+        View listItem = layoutInflater.inflate(R.layout.item_search_products, parent, false);
         SearchViewHolder searchViewHolder = new SearchViewHolder(listItem);
         return searchViewHolder;
     }
@@ -53,20 +54,20 @@ public class SearchViewAdapter extends RecyclerView.Adapter<SearchViewAdapter.Se
     @Override
     public void onBindViewHolder(@NonNull SearchViewHolder holder, int position) {
 
-        final Products products = productsList.get(position);
+        final SearchProducts search = searchProducts.get(position);
         final int[] start = {0};
         database = Room.databaseBuilder(context, Database.class, "CartDB").allowMainThreadQueries().build();
 
-        Glide.with(context).load(products.getProductImageURL()).into(holder.productImage);
-        holder.productName.setText(products.getProductName());
-        holder.productPrice.setText(products.getProductPrice());
-
+        Glide.with(context).load(search.getProductImageURL()).into(holder.productImage);
+        holder.productName.setText(search.getProductName());
+        holder.productPrice.setText(search.getProductPrice());
+        holder.soldBy.setText(search.getShopId().getShopName());
 
         carts = (ArrayList<Cart>) database.getCartDao().getProducts();
 
-        String productId = products.getId();
+        String productId = search.getId();
 
-        for (int i = 0; i < productsList.size(); i++) {
+        for (int i = 0; i < searchProducts.size(); i++) {
 //            Log.d("PRODUCTSLIST", productsList.get(i).getId());
 
             for (int j = 0; j < carts.size(); j++) {
@@ -89,15 +90,15 @@ public class SearchViewAdapter extends RecyclerView.Adapter<SearchViewAdapter.Se
 
                 start[0]++;
                 holder.number.setText(String.valueOf(start[0]));
-                Log.d("CHECKINGTHIS", products.toString());
+                Log.d("CHECKINGTHIS", search.toString());
                 Cart cart = new Cart();
-                cart.setProductId(products.getId());
-                cart.setShopId(products.getShopId());
-                cart.setMainCategoryId(products.getMainCategoryId());
-                cart.setSubCategoryId(products.getSubCategoryId());
-                cart.setProductImageURL(products.getProductImageURL());
-                cart.setProductName(products.getProductName());
-                cart.setProductPrice(Integer.parseInt(products.getProductPrice()));
+                cart.setProductId(search.getId());
+                cart.setShopId(search.getShopId().getId());
+                cart.setMainCategoryId(search.getMainCategoryId());
+                cart.setSubCategoryId(search.getSubCategoryId());
+                cart.setProductImageURL(search.getProductImageURL());
+                cart.setProductName(search.getProductName());
+                cart.setProductPrice(Integer.parseInt(search.getProductPrice()));
                 cart.setProductQuantity(start[0]);
                 addToCart(cart);
                 holder.addToCard.setVisibility(View.INVISIBLE);
@@ -112,13 +113,13 @@ public class SearchViewAdapter extends RecyclerView.Adapter<SearchViewAdapter.Se
                 start[0]++;
                 holder.number.setText(String.valueOf(start[0]));
                 Cart cart = new Cart();
-                cart.setProductId(products.getId());
-                cart.setShopId(products.getShopId());
-                cart.setMainCategoryId(products.getMainCategoryId());
-                cart.setSubCategoryId(products.getSubCategoryId());
-                cart.setProductImageURL(products.getProductImageURL());
-                cart.setProductName(products.getProductName());
-                cart.setProductPrice(Integer.parseInt(products.getProductPrice()));
+                cart.setProductId(search.getId());
+                cart.setShopId(search.getShopId().getId());
+                cart.setMainCategoryId(search.getMainCategoryId());
+                cart.setSubCategoryId(search.getSubCategoryId());
+                cart.setProductImageURL(search.getProductImageURL());
+                cart.setProductName(search.getProductName());
+                cart.setProductPrice(Integer.parseInt(search.getProductPrice()));
                 cart.setProductQuantity(start[0]);
                 updateCart(cart);
                 if (start[0] == 10) {
@@ -138,26 +139,26 @@ public class SearchViewAdapter extends RecyclerView.Adapter<SearchViewAdapter.Se
                     start[0] = 0;
                     holder.plus.setEnabled(true);
                     Cart cart = new Cart();
-                    cart.setProductId(products.getId());
-                    cart.setShopId(products.getShopId());
-                    cart.setMainCategoryId(products.getMainCategoryId());
-                    cart.setSubCategoryId(products.getSubCategoryId());
-                    cart.setProductImageURL(products.getProductImageURL());
-                    cart.setProductName(products.getProductName());
-                    cart.setProductPrice(Integer.parseInt(products.getProductPrice()));
+                    cart.setProductId(search.getId());
+                    cart.setShopId(search.getShopId().getId());
+                    cart.setMainCategoryId(search.getMainCategoryId());
+                    cart.setSubCategoryId(search.getSubCategoryId());
+                    cart.setProductImageURL(search.getProductImageURL());
+                    cart.setProductName(search.getProductName());
+                    cart.setProductPrice(Integer.parseInt(search.getProductPrice()));
                     cart.setProductQuantity(start[0]);
                     deleteItem(cart);
                     holder.addToCard.setVisibility(View.VISIBLE);
                 } else {
                     holder.number.setText(String.valueOf(start[0]));
                     Cart cart = new Cart();
-                    cart.setProductId(products.getId());
-                    cart.setShopId(products.getShopId());
-                    cart.setMainCategoryId(products.getMainCategoryId());
-                    cart.setSubCategoryId(products.getSubCategoryId());
-                    cart.setProductImageURL(products.getProductImageURL());
-                    cart.setProductName(products.getProductName());
-                    cart.setProductPrice(Integer.parseInt(products.getProductPrice()));
+                    cart.setProductId(search.getId());
+                    cart.setShopId(search.getShopId().getId());
+                    cart.setMainCategoryId(search.getMainCategoryId());
+                    cart.setSubCategoryId(search.getSubCategoryId());
+                    cart.setProductImageURL(search.getProductImageURL());
+                    cart.setProductName(search.getProductName());
+                    cart.setProductPrice(Integer.parseInt(search.getProductPrice()));
                     cart.setProductQuantity(start[0]);
                     updateCart(cart);
                 }
@@ -184,14 +185,14 @@ public class SearchViewAdapter extends RecyclerView.Adapter<SearchViewAdapter.Se
     private Filter searchFilter = new Filter() {
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
-            List<Products> productsList = new ArrayList<>();
+            List<SearchProducts> productsList = new ArrayList<>();
 
             if (constraint == null || constraint.length() == 0) {
-                productsList.addAll(productsListFull);
+                productsList.addAll(searchProductsListFull);
             } else {
                 String filterPattern = constraint.toString().toLowerCase().trim();
 
-                for (Products products : productsListFull) {
+                for (SearchProducts products : searchProductsListFull) {
                     if (products.getProductName().toLowerCase().contains(filterPattern)) {
                         productsList.add(products);
                     }
@@ -205,8 +206,8 @@ public class SearchViewAdapter extends RecyclerView.Adapter<SearchViewAdapter.Se
 
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            productsList.clear();
-            productsList.addAll((List) results.values);
+            searchProducts.clear();
+            searchProducts.addAll((List) results.values);
             notifyDataSetChanged();
         }
     };
@@ -262,7 +263,7 @@ public class SearchViewAdapter extends RecyclerView.Adapter<SearchViewAdapter.Se
 
     @Override
     public int getItemCount() {
-        return productsList.size();
+        return searchProducts.size();
     }
 
     public static class SearchViewHolder extends RecyclerView.ViewHolder {
@@ -271,8 +272,7 @@ public class SearchViewAdapter extends RecyclerView.Adapter<SearchViewAdapter.Se
         public Button addToCard;
         public ImageButton plus, minus;
         public TextView number;
-        public List<Products> productsList;
-        public List<Cart> carts;
+        public TextView soldBy;
 
         public SearchViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -284,6 +284,7 @@ public class SearchViewAdapter extends RecyclerView.Adapter<SearchViewAdapter.Se
             plus = itemView.findViewById(R.id.add);
             minus = itemView.findViewById(R.id.remove);
             number = itemView.findViewById(R.id.Number);
+            soldBy = itemView.findViewById(R.id.soldBy);
         }
     }
 }

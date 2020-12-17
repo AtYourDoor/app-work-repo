@@ -10,6 +10,7 @@ import com.atyourdoorteam.atyourdoor.models.Message;
 import com.atyourdoorteam.atyourdoor.models.OrderedItem;
 import com.atyourdoorteam.atyourdoor.models.Orders;
 import com.atyourdoorteam.atyourdoor.models.Products;
+import com.atyourdoorteam.atyourdoor.models.SearchProductsByLocation.SearchProducts;
 import com.atyourdoorteam.atyourdoor.models.Shop;
 import com.atyourdoorteam.atyourdoor.models.SubCategories;
 import com.atyourdoorteam.atyourdoor.models.SubCategoriesProducts.ProductsBySubCategories;
@@ -157,11 +158,17 @@ public interface APIService {
     );
 
     @GET("products/get/all/products/of/db")
-    Call<List<Products>> getAllProductsForSearch();
+    Call<List<SearchProducts>> getAllProductsForSearch();
 
     @GET("products/subCategory/{subCategoryId}")
     Call<List<ProductsBySubCategories>> getProductsBySubCategory(
             @Path("subCategoryId") String subCategoryId
+    );
+
+    @GET("shops/getShops/{latitude}/{longitude}")
+    Call<List<Shop>> getShopsAccrodingToLocation(
+            @Path("latitude") String latitude,
+            @Path("longitude") String longitude
     );
 
 }

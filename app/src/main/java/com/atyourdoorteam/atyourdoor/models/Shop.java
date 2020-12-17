@@ -51,6 +51,14 @@ public class Shop {
         this.shopAddress = shopAddress;
     }
 
+    public Shop(String id, String shopName, String shopImageURL, String shopAddress, List<Double> shopLocation) {
+        this.id = id;
+        this.shopName = shopName;
+        this.shopImageURL = shopImageURL;
+        this.shopAddress = shopAddress;
+        this.shopLocation = shopLocation;
+    }
+
     public Shop(List<Double> shopLocation) {
         this.shopLocation = shopLocation;
     }
