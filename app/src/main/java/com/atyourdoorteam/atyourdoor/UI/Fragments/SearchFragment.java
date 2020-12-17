@@ -172,7 +172,7 @@ public class SearchFragment extends Fragment {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    getProducts(addresses.get(0).getLocality().trim().toLowerCase());
+                                    getProducts(addresses.get(0).getLocality().trim().toLowerCase(), location.getLatitude(), location.getLongitude());
                                 }
                             }, 700);
                         }
@@ -259,7 +259,7 @@ public class SearchFragment extends Fragment {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    getProducts(addresses.get(0).getLocality().trim().toLowerCase());
+                    getProducts(addresses.get(0).getLocality().trim().toLowerCase(), mLastLocation.getLatitude(), mLastLocation.getLongitude());
                 }
             }, 700);
         }
@@ -299,7 +299,7 @@ public class SearchFragment extends Fragment {
         }
     }
 
-    private void getProducts(String userCity) {
+    private void getProducts(String userCity, double latitude, double longitude) {
         APIService apiService = RetrofitInstance.getService();
 
         Call<List<SearchProducts>> getAllProductsForSearch = apiService.getAllProductsForSearch();
@@ -356,7 +356,7 @@ public class SearchFragment extends Fragment {
                         productCount.setVisibility(View.GONE);
                     } else {
                         productCount.setText("Search From " + searchProductsArrayList.size() + " Products of " + shopCity + " City");
-                        searchViewAdapter = new SearchViewAdapter(searchProductsArrayList, getContext());
+                        searchViewAdapter = new SearchViewAdapter(searchProductsArrayList, getContext(), latitude, longitude);
                         searchRecyclerView.setAdapter(searchViewAdapter);
                         shimmerFrameLayout.stopShimmer();
                         shimmerFrameLayout.setVisibility(View.GONE);

@@ -119,7 +119,7 @@ public class AllShopsActivity extends AppCompatActivity {
                             new Handler().postDelayed(new Runnable() {
                                 @Override
                                 public void run() {
-                                    getShops(addresses.get(0).getLocality().trim().toLowerCase());
+                                    getShops(addresses.get(0).getLocality().trim().toLowerCase(), location.getLatitude(), location.getLongitude());
                                 }
                             }, 700);
                         }
@@ -206,7 +206,7 @@ public class AllShopsActivity extends AppCompatActivity {
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    getShops(addresses.get(0).getLocality().trim().toLowerCase());
+                    getShops(addresses.get(0).getLocality().trim().toLowerCase(), mLastLocation.getLatitude(), mLastLocation.getLongitude());
                 }
             }, 700);
         }
@@ -247,7 +247,7 @@ public class AllShopsActivity extends AppCompatActivity {
     }
 
 
-    private void getShops(String userCity) {
+    private void getShops(String userCity, double latitude, double longitude) {
         APIService apiService = RetrofitInstance.getService();
         Call<List<Shop>> shopCall = apiService.getShopsList();
 //        progressDialog = new ProgressDialog(AllShopsActivity.this);
@@ -285,7 +285,8 @@ public class AllShopsActivity extends AppCompatActivity {
                                     shopList.get(j).getId(),
                                     shopList.get(j).getShopName(),
                                     shopList.get(j).getShopImageURL(),
-                                    shopList.get(j).getShopAddress()));
+                                    shopList.get(j).getShopAddress(),
+                                    shopList.get(j).getShopLocation()));
                         }
                     }
 
@@ -299,7 +300,7 @@ public class AllShopsActivity extends AppCompatActivity {
 //                    }
 
 
-                    allShopsAdapter = new AllShopsAdapter(shopArrayList, AllShopsActivity.this);
+                    allShopsAdapter = new AllShopsAdapter(shopArrayList, AllShopsActivity.this, latitude, longitude);
                     allShopsRecyclerView.setAdapter(allShopsAdapter);
                     shimmerFrameLayout.stopShimmer();
                     shimmerFrameLayout.setVisibility(View.GONE);

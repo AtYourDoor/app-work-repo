@@ -33,14 +33,24 @@ public class SearchViewAdapter extends RecyclerView.Adapter<SearchViewAdapter.Se
     private List<SearchProducts> searchProductsListFull;
     private ArrayList<Cart> carts;
     private Database database;
-
     Context context;
+    double latitude;
+    double longitude;
 
     public SearchViewAdapter(List<SearchProducts> searchProducts, Context context) {
         this.searchProducts = searchProducts;
         this.context = context;
         searchProductsListFull = new ArrayList<>(searchProducts);
     }
+
+    public SearchViewAdapter(List<SearchProducts> searchProducts, Context context, double latitude, double longitude) {
+        this.searchProducts = searchProducts;
+        this.context = context;
+        searchProductsListFull = new ArrayList<>(searchProducts);
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
 
     @NonNull
     @Override
@@ -63,6 +73,10 @@ public class SearchViewAdapter extends RecyclerView.Adapter<SearchViewAdapter.Se
         holder.productPrice.setText(search.getProductPrice());
         holder.soldBy.setText(search.getShopId().getShopName());
 
+        double shopLatitude = search.getShopId().getShopLocation().get(0);
+        double shopLongitude = search.getShopId().getShopLocation().get(1);
+
+        holder.distance.setText(Math.round(distance(latitude, shopLatitude, longitude, shopLongitude) * 100.0) / 100.0 + " Kms Far");
         carts = (ArrayList<Cart>) database.getCartDao().getProducts();
 
         String productId = search.getId();
@@ -261,6 +275,33 @@ public class SearchViewAdapter extends RecyclerView.Adapter<SearchViewAdapter.Se
         }
     }
 
+    public static double distance(double lat1, double lat2, double lon1, double lon2) {
+
+        // The math module contains a function
+        // named toRadians which converts from
+        // degrees to radians.
+        lon1 = Math.toRadians(lon1);
+        lon2 = Math.toRadians(lon2);
+        lat1 = Math.toRadians(lat1);
+        lat2 = Math.toRadians(lat2);
+
+        // Haversine formula
+        double dlon = lon2 - lon1;
+        double dlat = lat2 - lat1;
+        double a = Math.pow(Math.sin(dlat / 2), 2)
+                + Math.cos(lat1) * Math.cos(lat2)
+                * Math.pow(Math.sin(dlon / 2), 2);
+
+        double c = 2 * Math.asin(Math.sqrt(a));
+
+        // Radius of earth in kilometers. Use 3956
+        // for miles
+        double r = 6371;
+
+        // calculate the result
+        return (c * r);
+    }
+
     @Override
     public int getItemCount() {
         return searchProducts.size();
@@ -273,6 +314,7 @@ public class SearchViewAdapter extends RecyclerView.Adapter<SearchViewAdapter.Se
         public ImageButton plus, minus;
         public TextView number;
         public TextView soldBy;
+        public TextView distance;
 
         public SearchViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -285,6 +327,7 @@ public class SearchViewAdapter extends RecyclerView.Adapter<SearchViewAdapter.Se
             minus = itemView.findViewById(R.id.remove);
             number = itemView.findViewById(R.id.Number);
             soldBy = itemView.findViewById(R.id.soldBy);
+            distance = itemView.findViewById(R.id.shopDistance);
         }
     }
 }
